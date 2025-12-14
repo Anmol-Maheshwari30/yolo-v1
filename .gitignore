@@ -1,0 +1,14 @@
+# datasets
+data/
+VOC*/
+*.jpg
+*.png
+*.xml
+
+# environments
+venv*/
+.venv/
+
+# cache
+__pycache__/
+*.pyc

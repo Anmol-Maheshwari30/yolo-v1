@@ -1,0 +1,7 @@
+opencv-python
+lxml
+tqdm
+numpy
+matplotlib
+tensorflow
+Pillow
