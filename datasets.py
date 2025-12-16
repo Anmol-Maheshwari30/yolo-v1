@@ -41,30 +41,6 @@ def parse_annotation(voc_root, image_id):
         labels.append(label)
 
     return boxes, labels
-"""
-def encode_yolo(boxes,labels):
-    target = np.zeros((s,s,b*5 + len(classes)))
-    cell = img_size/s
-
-    for box,label in zip(boxes, labels):
-        xmin, ymin, xmax, ymax = box
-        cx = (xmin + xmax) / 2
-        cy = (ymin + ymax) / 2
-        w = xmax - xmin
-        h = ymax - ymin
-
-        i = int(cx/cell)
-        j = int(cy/cell)
-
-        x = (cx - i*cell) / cell
-        y = (cy - j*cell) / cell
-
-        target[j , i, 0:5] = [x , y , w/img_size , h / img_size , 1]
-        class_idx = classes.index(label)
-        target[j , i, b*5 + class_idx] = 1
-
-        return target 
- """   
 def encode_yolo_target(boxes, labels, img_size=448, S=7, B=2, C=20):
     target = np.zeros((S, S, B*5 + C), dtype=np.float32)
 
@@ -77,8 +53,8 @@ def encode_yolo_target(boxes, labels, img_size=448, S=7, B=2, C=20):
         w = xmax - xmin
         h = ymax - ymin
 
-        i = int(y_center / cell_size)
-        j = int(x_center / cell_size)
+        i = min(int(y_center / cell_size), s-1)
+        j = min(int(x_center / cell_size), s-1)
 
         x_cell = (x_center - j * cell_size) / cell_size
         y_cell = (y_center - i * cell_size) / cell_size
@@ -93,6 +69,7 @@ def encode_yolo_target(boxes, labels, img_size=448, S=7, B=2, C=20):
         break
 
     return target
+
 
 
 
