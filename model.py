@@ -1,5 +1,8 @@
 import tensorflow as tf
+import keras
 from keras import layers, models
+from tensorflow.keras.applications import ResNet50
+from tensorflow.keras.applications.resnet50 import preprocess_input
 
 def conv(x , f, k , s= 1):
     x = layers.Conv2D(f, k , s, padding = "same" , use_bias = False)(x)
@@ -7,40 +10,28 @@ def conv(x , f, k , s= 1):
     return layers.LeakyReLU(0.1)(x)
 
 def yolov1():
-    inp = layers.Input((448, 448, 3))
-    x = conv(inp, 64, 7 , 2)
-    x = layers.MaxPooling2D(2)(x)
-    x = conv(x, 192, 3)
-    x = layers.MaxPooling2D(2)(x)
+  base_model = ResNet50(weights='imagenet', include_top=False, input_shape=(224, 224, 3))
+  base_model.trainable = False
 
-    x = conv(x, 128,1)
-    x = conv(x, 256, 3)
-    x = conv(x, 256, 1)
-    x = conv(x, 512, 3)
-    x = layers.MaxPooling2D(2)(x)
+  x = base_model.output
 
-    for _ in range(4):
-        x = conv(x, 256, 1)
-        x = conv(x, 512, 3)
+  x = layers.Conv2D(1024,3, padding = "same" , use_bias = False)(x)
+  x = layers.BatchNormalization()(x)
+  x = layers.LeakyReLU(0.1)(x)
 
+  x = layers.Flatten()(x)
+  x = layers.Dense(4096)(x)
+  x = layers.LeakyReLU(0.1)(x)
+  x = layers.Dropout(0.5)(x)
 
-    x = conv(x, 512, 1)
-    x = conv(x, 1024, 3)
-    x = layers.MaxPooling2D(2)(x)
+  x = layers.Dense(7*7*30, activation = "linear")(x)
+  out = layers.Reshape((7,7,30))(x)
 
-    x = conv(x, 1024, 3)
-    x = conv(x, 1024, 3)
-
-    x = layers.Flatten()(x)
-    x = layers.Dense(4096)(x)
-    x = layers.LeakyReLU(0.1)(x)
-    x = layers.Dense(7*7*30)(x)
-    out = layers.Reshape((7,7,30))(x)
-
-    return models.Model(inp, out)
+  return models.Model(base_model.input, outputs= out)
 
 if __name__ == "__main__":
     model = yolov1()
     model.summary()
+
 
 
