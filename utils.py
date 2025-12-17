@@ -48,13 +48,7 @@ def draw_boxes(image, boxes):
         label = classes[class_id]
 
         cv2.rectangle(img, (xmin,ymin), (xmax, ymax), (0,255,0) , 2)
-        cv2.outText(
-            img,
-            f"{label} {score:.2f}",
-            (xmin, max(ymin - 5, 0)),
-            cv2.FRONT_HERSHEY_SIMPLEX,
-            0.5,
-            (255,0,0),
-            1
-        )
+        cv2.outText(img, f"{label} {score:.2f}",(xmin, max(ymin - 5, 0)), cv2.FRONT_HERSHEY_SIMPLEX,0.5,
+            (255,255,255),1)
     return img
+
