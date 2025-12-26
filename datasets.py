@@ -66,9 +66,9 @@ def encode_yolo_target(boxes, labels, img_size=448, S=7, B=2, C=20):
         
         target[i, j, 0:5] = [x_cell, y_cell, w_norm, h_norm, 1.0]
         target[i, j, 5 + B*5 + class_id] = 1.0
-        break
 
     return target
+
 
 
 
